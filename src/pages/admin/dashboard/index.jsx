@@ -19,7 +19,25 @@ import formatDate from "@/utils/formatDate";
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState();
+  const [kehadiran, setKehadiran] = useState();
   const now = new Date();
+
+  const nowIndonesian = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+
+  const fetchKehadiran = async () => {
+    setLoading(true);
+    try {
+      const response = await axiosInstance.get("/admin/presensi",{
+        params: {
+          date: nowIndonesian.toISOString().split("T")[0],
+        }
+      } );
+      setKehadiran(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -33,6 +51,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchData();
+    fetchKehadiran();
   }, []);
 
   return (
@@ -148,7 +167,7 @@ const Dashboard = () => {
                   <>
                     <Box>
                       <Heading size="md">Presensi Siswa Hari Ini</Heading>
-                      <Text mt={5}>Tanggal {formatDate(now)}</Text>
+                      <Text mt={5}>Tanggal {formatDate(nowIndonesian)}</Text>
                     </Box>
                     <Flex
                       flexDirection="row"
@@ -164,7 +183,7 @@ const Dashboard = () => {
                           Hadir
                         </Text>
                         <Text color="white" fontSize="20px">
-                          {data?.kehadiranHariIni?.H}
+                          {kehadiran?.presensi?.H}
                         </Text>
                       </Flex>
                       <Flex flexDirection="column" alignItems="center" gap={5}>
@@ -172,7 +191,7 @@ const Dashboard = () => {
                           Sakit
                         </Text>
                         <Text color="white" fontSize="20px">
-                          {data?.kehadiranHariIni?.S}
+                          {kehadiran?.presensi?.S}
                         </Text>
                       </Flex>
                       <Flex flexDirection="column" alignItems="center" gap={5}>
@@ -180,7 +199,7 @@ const Dashboard = () => {
                           Izin
                         </Text>
                         <Text color="white" fontSize="20px">
-                          {data?.kehadiranHariIni?.I}
+                          {kehadiran?.presensi?.I}
                         </Text>
                       </Flex>
                       <Flex flexDirection="column" alignItems="center" gap={5}>
@@ -188,7 +207,7 @@ const Dashboard = () => {
                           Belum
                         </Text>
                         <Text color="white" fontSize="20px">
-                          {data?.kehadiranHariIni?.TK}
+                          {kehadiran?.presensi?.TK}
                         </Text>
                       </Flex>
                     </Flex>
