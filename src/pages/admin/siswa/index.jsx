@@ -3,7 +3,12 @@ import SidebarDashboard from "@/components/SidebarDashboard";
 import axiosInstance from "@/utils/axiosInstance";
 import { secondaryColor, white } from "@/utils/color";
 import formatDate from "@/utils/formatDate";
-import { AddIcon, ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
+import {
+  AddIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  ExternalLinkIcon,
+} from "@chakra-ui/icons";
 import {
   Button,
   Center,
@@ -153,6 +158,8 @@ const Siswa = () => {
                 <Tr>
                   <Th>No</Th>
                   <Th>Nama</Th>
+                  <Th>Kelas</Th>
+                  <Th>No Orangtua</Th>
                   <Th>Dibuat Pada</Th>
                   <Th></Th>
                 </Tr>
@@ -163,16 +170,36 @@ const Siswa = () => {
                     <Td>{index + 1}</Td>
                     <Td>
                       <Text as={"b"}>{item.nama}</Text>
-                      <Text>{item.email}</Text>
+                      <Text>{item.idSiswa}</Text>
+                    </Td>
+                    <Td>{item.kelas}</Td>
+                    <Td>
+                      +62{item.noOrangtua}{" "}
+                      <a
+                        href={`https://wa.me/62${item.noOrangtua}`}
+                        target={"_blank"}
+                      >
+                        <ExternalLinkIcon />
+                      </a>
                     </Td>
                     <Td>{formatDate(item.createdAt)}</Td>
                     <Td>
+                      <Button
+                        colorScheme={"teal"}
+                        onClick={() =>
+                          router.push(`/admin/siswa/${item.idSiswa}`)
+                        }
+                        m={2}
+                      >
+                        Edit
+                      </Button>
                       <Button
                         colorScheme={"red"}
                         onClick={() => {
                           setIsConfirmationOpen(true);
                           setDeleteId(item.idSiswa);
                         }}
+                        m={2}
                       >
                         Delete
                       </Button>
