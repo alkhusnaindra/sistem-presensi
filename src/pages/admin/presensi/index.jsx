@@ -43,7 +43,7 @@ import React, { useEffect, useState } from "react";
 
 const Presensi = () => {
   const router = useRouter();
-  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);  
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const toast = useToast();
   const [data, setData] = useState();
   const [loading, setLoading] = useState(true);
@@ -130,7 +130,7 @@ const Presensi = () => {
     router.isReady,
     router.query.date,
     router.query.tipe,
-  ]);  
+  ]);
 
   const fetchKelas = async () => {
     try {
@@ -179,7 +179,9 @@ const Presensi = () => {
           <ModalHeader>Konfirmasi Tindakan</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text>Apakah anda yakin ingin membuat hadir untuk yang belum presensi?</Text>
+            <Text>
+              Apakah anda yakin ingin membuat hadir untuk yang belum presensi?
+            </Text>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -214,12 +216,14 @@ const Presensi = () => {
           <HStack justifyContent={"space-between"} alignContent={"center"}>
             <Heading>Daftar Presensi</Heading>
             <Button
-              onClick={() => {setIsConfirmationOpen(true)}}
+              onClick={() => {
+                setIsConfirmationOpen(true);
+              }}
               bg={"teal.400"}
               color={"white"}
               outline={"2px solid teal.400"}
               leftIcon={<InfoIcon />}
-              _hover={{ bg: "white", color: "teal.400" }}              
+              _hover={{ bg: "white", color: "teal.400" }}
             >
               Buat Hadir
             </Button>
@@ -272,9 +276,14 @@ const Presensi = () => {
                 <Text color={"red"}> {data?.presensi?.A}</Text>
               </HStack>
               <HStack>
+                <Text color={"blueviolet"}>Sakit:</Text>
+                <Text color={"blueviolet"}> {data?.presensi?.S}</Text>
+              </HStack>
+              <HStack>
                 <Text color={"black"}>Belum:</Text>
                 <Text color={"black"}> {data?.presensi?.TK}</Text>
               </HStack>
+
             </HStack>
           </Box>
 
