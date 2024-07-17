@@ -31,10 +31,6 @@ function Tambah() {
             <FormLabel>Email</FormLabel>
             <Input type="email" placeholder="Masukkan email" />
           </FormControl>
-          <FormControl mb={6}>
-            <FormLabel>Password</FormLabel>
-            <Input type="password" placeholder="Masukkan password" />
-          </FormControl>
 
           <Button
             color={"white"}

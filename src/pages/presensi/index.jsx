@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from "react";
-import Footer from "@/components/footer";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { useRouter } from "next/router";
+import {
+  Box,
+  Button,
+  Center,
+  Container,
+  Flex,
+  Heading,
+  Text,
+} from "@chakra-ui/react";
+import Footer from "@/components/footer";
 
 const ScanPresensi = () => {
   const [scanResult, setScanResult] = useState(null);
@@ -38,60 +47,80 @@ const ScanPresensi = () => {
   }, []);
 
   return (
-    <div>
-      <div>
-        <div className="flex h-[93vh] flex-col items-center justify-between">
-          <div className="flex flex-row items-center justify-between w-full px-10 py-5">
-            <p className="text-xl">Presensi Siswa Berbasis QR Code</p>
-            <button
-              onClick={() => router.push("/presensi")}
-              href="#"
-              className="inline-flex items-center px-5 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800"
-            >
-              LOGOUT
-            </button>
-          </div>
-          <div className="m-auto">
-            {/* card */}
-            <div className="w-[500px] bg-white border border-gray-200 rounded-lg shadow relative ">
-              <div className="p-10">
-                <div className="flex flex-row justify-between bg-white border p-5 rounded-lg absolute top-[-40px] w-[415px] mx-auto ">
-                  <div>
-                    <p className="font-bold">Presensi Masuk</p>
-                    <p className="text-[12px]">Tunjukan QR Code ke Kamera</p>
-                  </div>
-                  <button
-                    onClick={() => router.push("/presensi")}
-                    href="#"
-                    className="inline-flex items-center px-3 py-1 text-sm font-medium text-center text-white bg-blue-700 rounded-lg cursor-pointer"
-                  >
-                    PRESENSI PULANG
-                  </button>
-                </div>
-
-                {/* qr scanner */}
-                <div className="w-full h-[250px] bg-gray-50 mt-10 mx-auto">
-                  {scanResult ? (
-                    <div>
-                      Success: <p>{scanResult}</p>
-                    </div>
-                  ) : (
-                    <div id="reader"></div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-          <button
-            href="#"
-            className="inline-flex items-center px-5 py-3 text-sm font-medium text-center text-white bg-blue-700 rounded-lg cursor-pointer mb-24"
+    <Box width={"100%"} h="100vh">
+      <Flex direction="column" justify="space-between" h="full">
+        <Flex justify="space-between" align="center" px={10} py={5}>
+          <Flex direction={"column"} gap={2}>
+            <Heading fontSize={"20px"}>Presensi Siswa Berbasis QR Code</Heading>
+            <Text>SD ‘Aisyiyah Unggulan Purworejo</Text>
+          </Flex>
+          <Button
+            onClick={() => router.push("/presensi")}
+            variant="solid"
+            size="sm"
+            color={"white"}
+            bg={"red.400"}
+            _hover={{
+              bg: "red.300",
+            }}
           >
-            PRESENSI LAGI
-          </button>
-        </div>
+            LOGOUT
+          </Button>
+        </Flex>
+        <Center flex="1" mt={"-150px"}>
+          {/* card */}
+          <Flex
+            w="full"
+            maxW="500px"
+            bg="white"
+            borderWidth="1px"
+            borderColor="gray.200"
+            rounded="lg"
+            shadow="md"
+            position="relative"
+            direction="column"
+          >
+            <Flex
+              justify="space-between"
+              p={5}
+              // position="absolute"
+              w={["full"]}
+              mx="auto"
+            >
+              <Flex direction="column">
+                <Text fontWeight="bold">Presensi Masuk</Text>
+                <Text fontSize="sm">Tunjukan QR Code ke Kamera</Text>
+              </Flex>
+              <Button
+                onClick={() => router.push("/presensi")}
+                color={"white"}
+                bg={"teal.400"}
+                _hover={{
+                  bg: "teal.300",
+                }}
+                variant="solid"
+                size="md"
+              >
+                PRESENSI LAGI
+              </Button>
+            </Flex>
+
+            {/* qr scanner */}
+            <Box w="full" h="300px" bg="gray.50" mx="auto">
+              {scanResult ? (
+                <Text>
+                  Success: <Text as="span">{scanResult}</Text>
+                </Text>
+              ) : (
+                <div id="reader"></div>
+              )}
+            </Box>
+          </Flex>
+        </Center>
+
         <Footer />
-      </div>
-    </div>
+      </Flex>
+    </Box>
   );
 };
 

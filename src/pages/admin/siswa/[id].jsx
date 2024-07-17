@@ -8,7 +8,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 
-function Tambah() {
+function Edit() {
   return (
     <SidebarDashboard>
       <Flex
@@ -26,7 +26,7 @@ function Tambah() {
           w="800px"
           maxW="90%"
         >
-          <Heading mb={6}>Tambah Data Siswa</Heading>
+          <Heading mb={6}>Edit Data Siswa</Heading>
           <FormControl mb={4}>
             <FormLabel>NIS</FormLabel>
             <Input type="number" placeholder="Masukkan NIS" />
@@ -59,4 +59,4 @@ function Tambah() {
   );
 }
 
-export default Tambah;
+export default Edit;

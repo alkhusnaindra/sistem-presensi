@@ -84,9 +84,9 @@ export default function SidebarDashboard({ children }) {
             fontSize={"sm"}
             fontWeight={600}
             color={"white"}
-            bg={"teal.400"}
+            bg={"red.400"}
             _hover={{
-              bg: "teal.300",
+              bg: "red.300",
             }}
             onClick={() => {}}
           >
@@ -115,7 +115,7 @@ const DesktopNav = () => {
   return (
     <Stack direction={"row"} spacing={4}>
       {NAV_ITEMS.map((navItem) => (
-        <Box key={navItem.label}>
+        <Box key={navItem.label} cursor={"pointer"}>
           <Popover trigger={"hover"} placement={"bottom-start"}>
             <PopoverTrigger>
               <Box
