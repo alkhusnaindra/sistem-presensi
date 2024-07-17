@@ -88,9 +88,9 @@ export default function SidebarDashboard({ children }) {
           </Button>
         </Stack>
       </Flex>      
-      <div className="p-4">
+      <Flex w={"full"} h={"calc(100vh - 60px)"} px={8} pt={4}>
         {children}
-        </div>
+      </Flex>        
       <Collapse in={isOpen} animateOpacity>
         <MobileNav />
       </Collapse>
