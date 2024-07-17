@@ -22,7 +22,7 @@ const ScanPresensi = () => {
         scanner.clear();
         setScanResult(null);
         scanner.render(success, error);
-      }, 2000); // Adjust the delay as necessary
+      }, 2000);
     };
 
     const error = (err) => {

@@ -58,7 +58,7 @@ export default function SidebarDashboard({ children }) {
             fontFamily={"heading"}
             color={useColorModeValue("gray.800", "white")}
           >
-            Sistem Presensi
+            SD ‘Aisyiyah Unggulan Purworejo
           </Text>
 
           <Flex display={{ base: "none", md: "flex" }} ml={10}>
@@ -87,10 +87,10 @@ export default function SidebarDashboard({ children }) {
             Logout
           </Button>
         </Stack>
-      </Flex>      
+      </Flex>
       <Flex w={"full"} h={"calc(100vh - 60px)"} px={8} pt={4}>
         {children}
-      </Flex>        
+      </Flex>
       <Collapse in={isOpen} animateOpacity>
         <MobileNav />
       </Collapse>
@@ -120,11 +120,7 @@ const DesktopNav = () => {
                 }
                 fontSize={"sm"}
                 fontWeight={500}
-                color={
-                  isActive(navItem.href)
-                    ? "teal.400"                    
-                    : linkColor
-                }
+                color={isActive(navItem.href) ? "teal.400" : linkColor}
                 _hover={{
                   textDecoration: "none",
                   color: linkHoverColor,
