@@ -32,7 +32,7 @@ import { Modak } from "next/font/google";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
-const Petugas = () => {
+const Siswa = () => {
   const totalButton = useBreakpointValue({ base: 1, lg: 3 }, { fallback: 1 });
   const router = useRouter();
   const [data, setData] = useState();
@@ -46,7 +46,7 @@ const Petugas = () => {
     setData(null);
     setLoading(true);
     try {
-      const response = await axiosInstance.get("/admin/petugas", {
+      const response = await axiosInstance.get("/admin/siswa", {
         params: {
           page: router.query.page || 1,
         },
@@ -60,7 +60,7 @@ const Petugas = () => {
 
   const deleteData = async (id) => {
     try {
-      const response = await axiosInstance.delete(`/admin/petugas/${id}`);
+      const response = await axiosInstance.delete(`/admin/siswa/${id}`);
       toast({
         title: response?.data?.message,
         status: "info",
@@ -137,9 +137,9 @@ const Petugas = () => {
       <SidebarDashboard>
         <Flex direction={"column"} gap={5} w={"100%"}>
           <HStack justifyContent={"space-between"} alignContent={"center"}>
-            <Heading>Petugas</Heading>
+            <Heading>Siswa</Heading>
             <Button
-              onClick={() => router.push("/admin/petugas/tambah")}
+              onClick={() => router.push("/admin/siswa/tambah")}
               colorScheme={"teal"}
               variant={"outline"}
               leftIcon={<AddIcon />}
@@ -159,7 +159,7 @@ const Petugas = () => {
               </Thead>
               <Tbody>
                 {data?.data?.map((item, index) => (
-                  <Tr key={item.idPetugas}>
+                  <Tr key={item.idSiswa}>
                     <Td>{index + 1}</Td>
                     <Td>
                       <Text as={"b"}>{item.nama}</Text>
@@ -171,7 +171,7 @@ const Petugas = () => {
                         colorScheme={"red"}
                         onClick={() => {
                           setIsConfirmationOpen(true);
-                          setDeleteId(item.idPetugas);
+                          setDeleteId(item.idSiswa);
                         }}
                       >
                         Delete
@@ -266,4 +266,4 @@ const Petugas = () => {
   );
 };
 
-export default Petugas;
+export default Siswa;

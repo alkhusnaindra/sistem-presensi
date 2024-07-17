@@ -1,11 +1,13 @@
 import SidebarDashboard from "@/components/SidebarDashboard";
-import { Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
+import { Flex, Heading, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
 import React from "react";
 
 const Dashboard = () => {
   return (
     <SidebarDashboard>
-      <TableContainer  w={"100%"}>
+      <Flex direction={"column"} gap={5}  w={"100%"}>
+      <Heading>Dashboard</Heading>
+      <TableContainer >
         <Table>
           <Thead>
             <Tr>
@@ -27,6 +29,7 @@ const Dashboard = () => {
           </Tbody>
         </Table>
       </TableContainer>
+      </Flex>
     </SidebarDashboard>
   );
 };
