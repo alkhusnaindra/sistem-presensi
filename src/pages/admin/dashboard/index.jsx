@@ -29,11 +29,11 @@ const Dashboard = () => {
   const fetchKehadiran = async () => {
     setLoading(true);
     try {
-      const response = await axiosInstance.get("/admin/presensi",{
+      const response = await axiosInstance.get("/admin/presensi", {
         params: {
           date: nowIndonesian.toISOString().split("T")[0],
-        }
-      } );
+        },
+      });
       setKehadiran(response.data);
       setLoading(false);
     } catch (error) {
@@ -162,7 +162,10 @@ const Dashboard = () => {
           _hover={{ borderColor: "teal.100" }}
         >
           <Stack>
-            <CardBody>
+            <CardBody
+              cursor={"pointer"}
+              onClick={() => router.push("/admin/presensi")}
+            >
               <Flex
                 flexDirection={{ base: "column", md: "row" }}
                 gap={10}
