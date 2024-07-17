@@ -15,8 +15,10 @@ import { FaDoorClosed } from "react-icons/fa";
 import LoadingComponent from "@/components/LoadingComponent";
 import axiosInstance from "@/utils/axiosInstance";
 import formatDate from "@/utils/formatDate";
+import { useRouter } from "next/router";
 
 const Dashboard = () => {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState();
   const now = new Date();
@@ -44,6 +46,8 @@ const Dashboard = () => {
             overflow="hidden"
             variant="outline"
             _hover={{ borderColor: "teal.100" }}
+            onClick={() => router.push("/admin/siswa")}
+            cursor={"pointer"}
           >
             {loading ? (
               <LoadingComponent mx="auto" my="20" />
@@ -73,6 +77,8 @@ const Dashboard = () => {
             overflow="hidden"
             variant="outline"
             _hover={{ borderColor: "teal.100" }}
+            onClick={() => router.push("/admin/presensi")}
+            cursor={"pointer"}
           >
             {loading ? (
               <LoadingComponent m="auto" />
@@ -101,6 +107,8 @@ const Dashboard = () => {
             overflow="hidden"
             variant="outline"
             _hover={{ borderColor: "teal.100" }}
+            onClick={() => router.push("/admin/petugas")}
+            cursor={"pointer"}
           >
             {loading ? (
               <LoadingComponent m="auto" />

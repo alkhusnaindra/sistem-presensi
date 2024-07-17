@@ -14,6 +14,7 @@ import {
   useBreakpointValue,
   useDisclosure,
   Image,
+  Avatar,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -24,6 +25,7 @@ import {
 import { useRouter } from "next/router";
 
 export default function SidebarDashboard({ children }) {
+  const router = useRouter();
   const { isOpen, onToggle } = useDisclosure();
 
   return (
@@ -77,7 +79,22 @@ export default function SidebarDashboard({ children }) {
           justify={"flex-end"}
           direction={"row"}
           spacing={6}
+          alignItems={"center"}
         >
+          <Avatar
+            src="https://bit.ly/broken-link"
+            width={"35px"}
+            height={"35px"}
+            cursor={"pointer"}
+            onClick={() => {
+              router.push("/admin/profile");
+            }}
+          />
+          <Box
+            height="30px"
+            width="1px"
+            bg={useColorModeValue("gray.200", "gray.600")}
+          />
           <Button
             as={"a"}
             display={{ base: "none", md: "inline-flex" }}
