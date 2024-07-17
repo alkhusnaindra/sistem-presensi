@@ -1,14 +1,23 @@
 import Loading from "@/components/Loading";
 import SidebarDashboard from "@/components/SidebarDashboard";
+import axiosInstance from "@/utils/axiosInstance";
 import { secondaryColor, white } from "@/utils/color";
 import formatDate from "@/utils/formatDate";
-import { AddIcon, ArrowLeftIcon, ArrowRightIcon } from "@chakra-ui/icons";
+import formatTime from "@/utils/formatTime";
 import {
+  AddIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  InfoIcon,
+} from "@chakra-ui/icons";
+import {
+  Box,
   Button,
   Center,
   Flex,
   Heading,
   HStack,
+  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -16,6 +25,8 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Select,
+  Stack,
   Table,
   TableContainer,
   Tbody,
@@ -28,63 +39,147 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
-
-const data = {
-  data: [
-    {
-      idPetugas: 1,
-      nama: "John Doe",
-      email: "johndoe@example.com",
-      createdAt: "2023-07-16T00:00:00.000Z",
-    },
-    {
-      idPetugas: 2,
-      nama: "Jane Smith",
-      email: "janesmith@example.com",
-      createdAt: "2023-07-17T00:00:00.000Z",
-    },
-  ],
-  pagination: {
-    total_page: 2,
-    current_page: 1,
-  },
-};
+import React, { useEffect, useState } from "react";
 
 const Presensi = () => {
-  const totalButton = useBreakpointValue({ base: 1, lg: 3 }, { fallback: 1 });
   const router = useRouter();
-  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
-  const [deleteId, setDeleteId] = useState(null);
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);  
   const toast = useToast();
-  const [page, setPage] = useState(parseInt(router.query.page) || 1);
+  const [data, setData] = useState();
+  const [loading, setLoading] = useState(true);
+  const [kelas, setKelas] = useState([]);
+  const now = new Date();
+  // +7 FROM NOW
+  const nowIndonesian = new Date(now.getTime() + 7 * 60 * 60 * 1000);
 
-  const deleteData = (id) => {
-    toast({
-      title: `Data with id ${id} has been deleted`,
-      status: "info",
-      position: "bottom-right",
-      isClosable: true,
-    });
-    setIsConfirmationOpen(false);
-    setDeleteId(null);
+  const handleKehadiranChange = async (id, kehadiran) => {
+    try {
+      const response = await axiosInstance.put(`/admin/presensi/${id}`, {
+        kehadiran,
+        tanggal: router.query.date || nowIndonesian.toISOString().split("T")[0],
+        tipe: router.query.tipe || "MASUK",
+      });
+      console.log(response);
+      toast({
+        title: response.data.message,
+        status: "info",
+        position: "bottom-right",
+        isClosable: true,
+      });
+      fetchData();
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: error.response.data.message,
+        status: "error",
+        position: "bottom-right",
+        isClosable: true,
+      });
+    }
   };
 
-  const ConfirmationModal = (id) => {
+  const makeAllPresensiHadir = async () => {
+    try {
+      const response = await axiosInstance.post(`/admin/presensi`, {
+        tanggal: router.query.date || nowIndonesian.toISOString().split("T")[0],
+        tipe: router.query.tipe || "MASUK",
+      });
+      toast({
+        title: response.data.message,
+        status: "info",
+        position: "bottom-right",
+        isClosable: true,
+      });
+      fetchData();
+      setIsConfirmationOpen(false);
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: error.response.data.message,
+        status: "error",
+        position: "bottom-right",
+        isClosable: true,
+      });
+    }
+  };
+
+  const fetchData = async () => {
+    setLoading(true);
+    setData(null);
+    try {
+      const response = await axiosInstance.get("/admin/presensi", {
+        params: {
+          kelas: router.query.kelas,
+          date: router.query.date,
+          tipe: router.query.tipe,
+        },
+      });
+      setData(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (router.isReady) {
+      fetchData();
+    }
+  }, [
+    router.query.kelas,
+    router.isReady,
+    router.query.date,
+    router.query.tipe,
+  ]);  
+
+  const fetchKelas = async () => {
+    try {
+      const response = await axiosInstance.get("/admin/kelas");
+      setKelas(response.data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchKelas();
+  }, []);
+
+  const handleKelasChange = (newKelas) => {
+    router.push({
+      pathname: router.pathname,
+      query: { ...router.query, kelas: newKelas },
+    });
+  };
+
+  const handleTipeChange = (newTipe) => {
+    router.push({
+      pathname: router.pathname,
+      query: { ...router.query, tipe: newTipe },
+    });
+  };
+
+  const handleDateChange = (newDate) => {
+    router.push({
+      pathname: router.pathname,
+      query: { ...router.query, date: newDate },
+    });
+  };
+
+  const ConfirmationModal = () => {
     return (
       <Modal
         isOpen={isConfirmationOpen}
         onClose={() => {
           setIsConfirmationOpen(false);
-          setDeleteId(null);
         }}
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Konfirmasi Hapus</ModalHeader>
+          <ModalHeader>Konfirmasi Tindakan</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text>Apakah anda yakin ingin menghapus data ini?</Text>
+            <Text>Apakah anda yakin ingin membuat hadir untuk yang belum presensi?</Text>
           </ModalBody>
           <ModalFooter>
             <Button
@@ -92,13 +187,17 @@ const Presensi = () => {
               mr={3}
               onClick={() => {
                 setIsConfirmationOpen(false);
-                setDeleteId(null);
               }}
             >
-              Close
+              Tutup
             </Button>
-            <Button colorScheme={"red"} onClick={() => deleteData(deleteId)}>
-              Delete
+            <Button
+              colorScheme={"teal"}
+              onClick={() => {
+                makeAllPresensiHadir();
+              }}
+            >
+              Konfirmasi
             </Button>
           </ModalFooter>
         </ModalContent>
@@ -106,12 +205,7 @@ const Presensi = () => {
     );
   };
 
-  const handlePageChange = (newPage) => {
-    router.push({
-      pathname: router.pathname,
-      query: { ...router.query, page: newPage },
-    });
-  };
+  if (loading) return <Loading />;
 
   return (
     <>
@@ -120,123 +214,128 @@ const Presensi = () => {
           <HStack justifyContent={"space-between"} alignContent={"center"}>
             <Heading>Daftar Presensi</Heading>
             <Button
-              onClick={() => router.push("/admin/petugas/tambah")}
-              colorScheme={"teal"}
-              variant={"outline"}
-              leftIcon={<AddIcon />}
+              onClick={() => {setIsConfirmationOpen(true)}}
+              bg={"teal.400"}
+              color={"white"}
+              outline={"2px solid teal.400"}
+              leftIcon={<InfoIcon />}
+              _hover={{ bg: "white", color: "teal.400" }}              
             >
-              Tambah Data
+              Buat Hadir
             </Button>
           </HStack>
+          <HStack>
+            <Select
+              maxW={"200px"}
+              placeholder="Pilih Kelas"
+              value={router.query.kelas}
+              onChange={(e) => handleKelasChange(e.target.value)}
+            >
+              {kelas?.map((item, index) => (
+                <option key={index} value={item}>
+                  {item}
+                </option>
+              ))}
+            </Select>
+            <Select
+              maxW={"200px"}
+              placeholder="Pilih Tipe"
+              value={router.query.tipe ? router.query.tipe : "MASUK"}
+              onChange={(e) => handleTipeChange(e.target.value)}
+            >
+              <option value="MASUK">Masuk</option>
+              <option value="KELUAR">Keluar</option>
+            </Select>
+            <Input
+              type="date"
+              maxW={"200px"}
+              value={
+                router.query.date
+                  ? router.query.date
+                  : now.toISOString().split("T")[0]
+              }
+              onChange={(e) => handleDateChange(e.target.value)}
+            />
+          </HStack>
+          <Box bg={"white"} rounded={"md"} p={2} color={"teal"} maxW={"600px"}>
+            <HStack dir="row" gap={6}>
+              <HStack>
+                <Text>Hadir:</Text>
+                <Text> {data?.presensi?.H}</Text>
+              </HStack>
+              <HStack>
+                <Text color={secondaryColor}>Ijin:</Text>
+                <Text color={secondaryColor}> {data?.presensi?.I}</Text>
+              </HStack>
+              <HStack>
+                <Text color={"red"}>Alpa:</Text>
+                <Text color={"red"}> {data?.presensi?.A}</Text>
+              </HStack>
+              <HStack>
+                <Text color={"black"}>Belum:</Text>
+                <Text color={"black"}> {data?.presensi?.TK}</Text>
+              </HStack>
+            </HStack>
+          </Box>
+
           <TableContainer>
             <Table>
               <Thead>
                 <Tr>
                   <Th>No</Th>
                   <Th>Nama</Th>
-                  <Th>Dibuat Pada</Th>
+                  <Th>Kelas</Th>
+                  <Th>Kehadiran</Th>
+                  <Th>Waktu</Th>
                   <Th></Th>
                 </Tr>
               </Thead>
               <Tbody>
                 {data.data.map((item, index) => (
-                  <Tr key={item.idPetugas}>
+                  <Tr key={item.index}>
                     <Td>{index + 1}</Td>
                     <Td>
-                      <Text as={"b"}>{item.nama}</Text>
-                      <Text>{item.email}</Text>
+                      <Text as={"b"}>{item.siswa.nama}</Text>
+                      <Text>{item.siswa.idSiswa}</Text>
                     </Td>
-                    <Td>{formatDate(item.createdAt)}</Td>
+                    <Td>{item.siswa.kelas}</Td>
                     <Td>
-                      <Button
-                        colorScheme={"red"}
-                        onClick={() => {
-                          setIsConfirmationOpen(true);
-                          setDeleteId(item.idPetugas);
-                        }}
+                      {item.kehadiran == "H"
+                        ? "Hadir"
+                        : item.kehadiran == "S"
+                        ? "Sakit"
+                        : item.kehadiran == "I"
+                        ? "Izin"
+                        : item.kehadiran == "A"
+                        ? "Alpa"
+                        : "-"}
+                    </Td>
+                    <Td>
+                      <Text>{item.waktu ? formatDate(item.waktu) : "-"}</Text>
+                      <Text>{item.waktu ? formatTime(item.waktu) : ""}</Text>
+                    </Td>
+                    <Td>
+                      <Select
+                        value={item.kehadiran}
+                        onChange={(e) =>
+                          handleKehadiranChange(
+                            item.siswa.idSiswa,
+                            e.target.value
+                          )
+                        }
+                        placeholder="Belum"
                       >
-                        Delete
-                      </Button>
+                        <option value="H">Hadir</option>
+                        <option value="S">Sakit</option>
+                        <option value="I">Izin</option>
+                        <option value="A">Alpa</option>
+                      </Select>
                     </Td>
                   </Tr>
                 ))}
               </Tbody>
             </Table>
           </TableContainer>
-          {data.pagination.total_page > 0 ? (
-            <HStack mt={4} mx={"auto"}>
-              <Button
-                variant="outline"
-                colorScheme="teal"
-                onClick={() =>
-                  handlePageChange(data.pagination.current_page - 1)
-                }
-                isDisabled={data.pagination.current_page === 1}
-              >
-                <ArrowLeftIcon />
-              </Button>
-              {data.pagination.current_page > 3 && (
-                <>
-                  <Button
-                    variant="outline"
-                    colorScheme="teal"
-                    onClick={() => handlePageChange(1)}
-                  >
-                    1
-                  </Button>
-                  {data.pagination.current_page > 4 && <Text>...</Text>}
-                </>
-              )}
-              {Array.from(
-                { length: totalButton },
-                (_, index) => data.pagination.current_page - 0 + index
-              )
-                .filter(
-                  (pageNumber) =>
-                    pageNumber > 0 && pageNumber <= data.pagination.total_page
-                )
-                .map((pageNumber) => (
-                  <Button
-                    key={pageNumber}
-                    variant={
-                      data.pagination.current_page === pageNumber
-                        ? "solid"
-                        : "outline"
-                    }
-                    colorScheme="teal"
-                    onClick={() => handlePageChange(pageNumber)}
-                  >
-                    {pageNumber}
-                  </Button>
-                ))}
-              {data.pagination.current_page <
-                data.pagination.total_page - 2 && (
-                <>
-                  {data.pagination.current_page <
-                    data.pagination.total_page - 3 && <Text>...</Text>}
-                  <Button
-                    variant="outline"
-                    colorScheme="teal"
-                    onClick={() => handlePageChange(data.pagination.total_page)}
-                  >
-                    {data.pagination.total_page}
-                  </Button>
-                </>
-              )}
-              <Button
-                variant="outline"
-                colorScheme="teal"
-                onClick={() =>
-                  handlePageChange(data.pagination.current_page + 1)
-                }
-                isDisabled={
-                  data.pagination.current_page === data.pagination.total_page
-                }
-              >
-                <ArrowRightIcon />
-              </Button>
-            </HStack>
-          ) : null}
         </Flex>
       </SidebarDashboard>
       <ConfirmationModal />
