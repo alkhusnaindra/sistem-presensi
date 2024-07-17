@@ -9,11 +9,32 @@ import {
   Box,
   SimpleGrid,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaUsers, FaUserGroup } from "react-icons/fa6";
 import { FaDoorClosed } from "react-icons/fa";
+import LoadingComponent from "@/components/LoadingComponent";
+import axiosInstance from "@/utils/axiosInstance";
+import formatDate from "@/utils/formatDate";
 
 const Dashboard = () => {
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState();
+  const now = new Date();
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const response = await axiosInstance.get("/admin/dashboard");
+      setData(response.data.data);
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   return (
     <SidebarDashboard>
       <Flex flexDirection="column" gap={10}>
@@ -24,66 +45,85 @@ const Dashboard = () => {
             variant="outline"
             _hover={{ borderColor: "teal.100" }}
           >
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              mt="10px"
-              p={5}
-            >
-              <FaUsers size="2em" />
-            </Box>
-            <Stack>
-              <CardBody>
-                <Heading size="md">Jumlah Siswa</Heading>
-                <Text py={2}>100 Siswa</Text>
-              </CardBody>
-            </Stack>
+            {loading ? (
+              <LoadingComponent mx="auto" my="20" />
+            ) : (
+              <>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  mt="10px"
+                  p={5}
+                >
+                  <FaUsers size="2em" />
+                </Box>
+                <Stack>
+                  <CardBody>
+                    <Heading size="md">Jumlah Siswa</Heading>
+                    <Text py={2}>{data?.totalSiswa} Siswa</Text>
+                  </CardBody>
+                </Stack>
+              </>
+            )}
+          </Card>
+
+          <Card
+            overflow="hidden"
+            variant="outline"
+            _hover={{ borderColor: "teal.100" }}
+          >
+            {loading ? (
+              <LoadingComponent m="auto" />
+            ) : (
+              <>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  mt="10px"
+                  p={5}
+                >
+                  <FaDoorClosed size="2em" />
+                </Box>
+                <Stack>
+                  <CardBody>
+                    <Heading size="md">Jumlah Kelas</Heading>
+                    <Text py={2}>{data?.totalKelas} Kelas</Text>
+                  </CardBody>
+                </Stack>
+              </>
+            )}
           </Card>
           <Card
             overflow="hidden"
             variant="outline"
             _hover={{ borderColor: "teal.100" }}
           >
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              mt="10px"
-              p={5}
-            >
-              <FaDoorClosed size="2em" />
-            </Box>
-            <Stack>
-              <CardBody>
-                <Heading size="md">Jumlah Kelas</Heading>
-                <Text py={2}>6 Kelas</Text>
-              </CardBody>
-            </Stack>
-          </Card>
-          <Card
-            overflow="hidden"
-            variant="outline"
-            _hover={{ borderColor: "teal.100" }}
-          >
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              mt="10px"
-              p={5}
-            >
-              <FaUserGroup size="2em" />
-            </Box>
-            <Stack>
-              <CardBody>
-                <Heading size="md">Jumlah Petugas</Heading>
-                <Text py={2}>3 Petugas</Text>
-              </CardBody>
-            </Stack>
+            {loading ? (
+              <LoadingComponent m="auto" />
+            ) : (
+              <>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  alignItems="center"
+                  justifyContent="center"
+                  mt="10px"
+                  p={5}
+                >
+                  <FaUserGroup size="2em" />
+                </Box>
+                <Stack>
+                  <CardBody>
+                    <Heading size="md">Jumlah Petugas</Heading>
+                    <Text py={2}>{data?.totalPetugas} Petugas</Text>
+                  </CardBody>
+                </Stack>
+              </>
+            )}
           </Card>
         </SimpleGrid>
 
@@ -102,44 +142,58 @@ const Dashboard = () => {
                 alignItems="center"
                 justifyContent={"space-between"}
               >
-                <Box>
-                  <Heading size="md">Presensi Siswa Hari Ini</Heading>
-                  <Text mt={5}>Tanggal 17 Agustus 2023</Text>
-                </Box>
-                <Flex
-                  flexDirection="row"
-                  alignItems="center"
-                  width="400px"
-                  justifyContent="space-around"
-                  bg="teal.500"
-                  p={5}
-                  rounded="lg"
-                >
-                  <Flex flexDirection="column" alignItems="center" gap={5}>
-                    <Text fontWeight={500} color="white">
-                      Hadir
-                    </Text>
-                    <Text color="white" fontSize="20px">
-                      10
-                    </Text>
-                  </Flex>
-                  <Flex flexDirection="column" alignItems="center" gap={5}>
-                    <Text fontWeight={500} color="white">
-                      Sakit
-                    </Text>
-                    <Text color="white" fontSize="20px">
-                      10
-                    </Text>
-                  </Flex>
-                  <Flex flexDirection="column" alignItems="center" gap={5}>
-                    <Text fontWeight={500} color="white">
-                      Izin
-                    </Text>
-                    <Text color="white" fontSize="20px">
-                      10
-                    </Text>
-                  </Flex>
-                </Flex>
+                {loading ? (
+                  <LoadingComponent mx="320" my="10" />
+                ) : (
+                  <>
+                    <Box>
+                      <Heading size="md">Presensi Siswa Hari Ini</Heading>
+                      <Text mt={5}>Tanggal {formatDate(now)}</Text>
+                    </Box>
+                    <Flex
+                      flexDirection="row"
+                      alignItems="center"
+                      width="400px"
+                      justifyContent="space-around"
+                      bg="teal.500"
+                      p={5}
+                      rounded="lg"
+                    >
+                      <Flex flexDirection="column" alignItems="center" gap={5}>
+                        <Text fontWeight={500} color="white">
+                          Hadir
+                        </Text>
+                        <Text color="white" fontSize="20px">
+                          {data?.kehadiranHariIni?.H}
+                        </Text>
+                      </Flex>
+                      <Flex flexDirection="column" alignItems="center" gap={5}>
+                        <Text fontWeight={500} color="white">
+                          Sakit
+                        </Text>
+                        <Text color="white" fontSize="20px">
+                          {data?.kehadiranHariIni?.S}
+                        </Text>
+                      </Flex>
+                      <Flex flexDirection="column" alignItems="center" gap={5}>
+                        <Text fontWeight={500} color="white">
+                          Izin
+                        </Text>
+                        <Text color="white" fontSize="20px">
+                          {data?.kehadiranHariIni?.I}
+                        </Text>
+                      </Flex>
+                      <Flex flexDirection="column" alignItems="center" gap={5}>
+                        <Text fontWeight={500} color="white">
+                          Belum
+                        </Text>
+                        <Text color="white" fontSize="20px">
+                          {data?.kehadiranHariIni?.TK}
+                        </Text>
+                      </Flex>
+                    </Flex>
+                  </>
+                )}
               </Flex>
             </CardBody>
           </Stack>
