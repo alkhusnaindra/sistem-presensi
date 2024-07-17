@@ -88,7 +88,7 @@ export default function SidebarDashboard({ children }) {
           </Button>
         </Stack>
       </Flex>
-      <Flex w={"full"} h={"calc(100vh - 60px)"} px={8} pt={4}>
+      <Flex w={"full"} px={8} py={4}>
         {children}
       </Flex>
       <Collapse in={isOpen} animateOpacity>
