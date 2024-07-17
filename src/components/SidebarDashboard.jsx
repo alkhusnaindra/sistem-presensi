@@ -28,6 +28,15 @@ export default function SidebarDashboard({ children }) {
   const router = useRouter();
   const { isOpen, onToggle } = useDisclosure();
 
+  const handleLogout = () => {
+    try {
+      localStorage.setItem("token", "");
+      router.push("/");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <Box>
       <Flex
@@ -105,7 +114,9 @@ export default function SidebarDashboard({ children }) {
             _hover={{
               bg: "red.300",
             }}
-            onClick={() => {}}
+            onClick={() => {
+              handleLogout();
+            }}
           >
             Logout
           </Button>
