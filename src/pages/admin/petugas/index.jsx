@@ -40,7 +40,6 @@ const Petugas = () => {
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const toast = useToast();
-  const [page, setPage] = useState(parseInt(router.query.page) || 1);
 
   const fetchData = async () => {
     setData(null);
@@ -143,6 +142,7 @@ const Petugas = () => {
               colorScheme={"teal"}
               variant={"outline"}
               leftIcon={<AddIcon />}
+              _hover={{ bg: "teal.500", color: "white" }}
             >
               Tambah Data
             </Button>

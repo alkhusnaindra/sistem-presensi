@@ -22,6 +22,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Select,
   Table,
   TableContainer,
   Tbody,
@@ -45,7 +46,7 @@ const Siswa = () => {
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const toast = useToast();
-  const [page, setPage] = useState(parseInt(router.query.page) || 1);
+  const [kelas, setKelas] = useState([]);
 
   const fetchData = async () => {
     setData(null);
@@ -54,6 +55,7 @@ const Siswa = () => {
       const response = await axiosInstance.get("/admin/siswa", {
         params: {
           page: router.query.page || 1,
+          kelas: router.query.kelas,
         },
       });
       setData(response.data);
@@ -62,6 +64,19 @@ const Siswa = () => {
       console.error(error);
     }
   };
+
+  const fetchKelas = async () => {
+    try {
+      const response = await axiosInstance.get("/admin/kelas");
+      setKelas(response.data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchKelas();
+  }, []);
 
   const deleteData = async (id) => {
     try {
@@ -129,11 +144,18 @@ const Siswa = () => {
     });
   };
 
+  const handleKelasChange = (newKelas) => {
+    router.push({
+      pathname: router.pathname,
+      query: { ...router.query, kelas: newKelas },
+    });
+  };
+
   useEffect(() => {
     if (router.isReady) {
       fetchData();
     }
-  }, [router.query.page, router.isReady]);
+  }, [router.query.page, router.isReady, router.query.kelas]);
 
   if (loading) return <Loading />;
 
@@ -148,10 +170,18 @@ const Siswa = () => {
               colorScheme={"teal"}
               variant={"outline"}
               leftIcon={<AddIcon />}
+              _hover={{ bg: "teal.500", color: "white" }}
             >
               Tambah Data
             </Button>
           </HStack>
+          <Select maxW={"200px"} placeholder="Pilih Kelas" value={router.query.kelas} onChange={(e) => handleKelasChange(e.target.value)}>
+            {kelas?.map((item, index) => (
+              <option key={index} value={item}>
+                {item}
+              </option>
+            ))}
+          </Select>
           <TableContainer>
             <Table>
               <Thead>
