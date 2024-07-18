@@ -124,6 +124,11 @@ const Login = () => {
                     placeholder="Masukkan Email"
                     onChange={(e) => setEmail(e.target.value)}
                     value={email}
+                    _placeholder={{
+                      opacity: 0.5,
+                      color: "gray.500",
+                      fontsize: 12,
+                    }}
                   />
                 </FormControl>
                 <FormControl mt="3">
@@ -135,6 +140,11 @@ const Login = () => {
                       placeholder="Masukkan password"
                       onChange={(e) => setPassword(e.target.value)}
                       value={password}
+                      _placeholder={{
+                        opacity: 0.5,
+                        color: "gray.500",
+                        fontsize: 12,
+                      }}
                     />
                     <InputRightElement width="4.5rem">
                       <Button h="1.75rem" size="sm" onClick={handleClick}>
