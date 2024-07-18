@@ -100,6 +100,7 @@ const Siswa = () => {
         isClosable: true,
       });
       fetchData();
+      fetchKelas();
       setIsConfirmationOpen(false);
       setIdSiswa(null);
     } catch (error) {
