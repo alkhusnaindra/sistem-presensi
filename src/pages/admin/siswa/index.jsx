@@ -8,6 +8,7 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
   ExternalLinkIcon,
+  InfoIcon,
 } from "@chakra-ui/icons";
 import {
   Button,
@@ -232,6 +233,12 @@ const Siswa = () => {
                         m={2}
                       >
                         Delete
+                      </Button>                    
+                      <Button
+                        colorScheme={"gray"}
+                        m={2}
+                        onClick={() => router.push(`/admin/siswa/presensi/${item.idSiswa}`)}>
+                        Presensi
                       </Button>
                     </Td>
                   </Tr>

@@ -24,7 +24,7 @@ import {
 } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
 
-export default function SidebarDashboard({ children }) {
+const SidebarDashboard = ({ children }) => {
   const router = useRouter();
   const { isOpen, onToggle } = useDisclosure();
 
@@ -325,3 +325,5 @@ const NAV_ITEMS = [
     href: "/admin/presensi",
   },
 ];
+
+export default SidebarDashboard;
