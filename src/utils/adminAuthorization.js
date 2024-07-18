@@ -1,26 +1,24 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, createContext } from "react";
-import { jwtDecode } from "jwt-decode";
+import jwtDecode from "jwt-decode";
 import { useToast } from "@chakra-ui/react";
 
 export const AuthContext = createContext();
 
 const withAdminAuth = (Component) => {
-  return (props) => {
+  const AuthenticatedComponent = (props) => {
     const router = useRouter();
     const [userData, setUserData] = useState(null);
-    const toast = useToast()
+    const toast = useToast();
 
     useEffect(() => {
       const token = localStorage.getItem("token");
       if (!token) {
         router.push("/");
-        console.log(1)
       } else {
         try {
           const payload = jwtDecode(token);
-          if (!payload.idAdmin) {
-            console.log(52862)
+          if (!payload.idPetugas) {
             router.push("/");
           } else if (payload.exp < Date.now() / 1000) {
             toast({
@@ -30,17 +28,15 @@ const withAdminAuth = (Component) => {
               isClosable: true,
             });
             router.push("/");
-            console.log(2)
           } else {
             setUserData(payload);
           }
         } catch (error) {
-          console.log(3)
           console.error("Error decoding token:", error);
           router.push("/");
         }
       }
-    }, [router]);
+    }, [router, toast]);
 
     return (
       <AuthContext.Provider value={userData}>
@@ -48,6 +44,10 @@ const withAdminAuth = (Component) => {
       </AuthContext.Provider>
     );
   };
+
+  AuthenticatedComponent.displayName = `withAdminAuth(${Component.displayName || Component.name || 'Component'})`;
+
+  return AuthenticatedComponent;
 }
 
-export default withAdminAuth
+export default withAdminAuth;

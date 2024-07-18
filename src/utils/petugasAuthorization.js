@@ -6,21 +6,19 @@ import { useToast } from "@chakra-ui/react";
 export const AuthContext = createContext();
 
 const withPetugasAuth = (Component) => {
-  return (props) => {
+  const AuthenticatedComponent = (props) => {
     const router = useRouter();
     const [userData, setUserData] = useState(null);
-    const toast = useToast()
+    const toast = useToast();
 
     useEffect(() => {
       const token = localStorage.getItem("token");
       if (!token) {
         router.push("/");
-        console.log(1)
       } else {
         try {
           const payload = jwtDecode(token);
           if (!payload.idPetugas) {
-            console.log(52862)
             router.push("/");
           } else if (payload.exp < Date.now() / 1000) {
             toast({
@@ -30,17 +28,15 @@ const withPetugasAuth = (Component) => {
               isClosable: true,
             });
             router.push("/");
-            console.log(2)
           } else {
             setUserData(payload);
           }
         } catch (error) {
-          console.log(3)
           console.error("Error decoding token:", error);
           router.push("/");
         }
       }
-    }, [router]);
+    }, [router, toast]);
 
     return (
       <AuthContext.Provider value={userData}>
@@ -48,6 +44,10 @@ const withPetugasAuth = (Component) => {
       </AuthContext.Provider>
     );
   };
+
+  AuthenticatedComponent.displayName = `withPetugasAuth(${Component.displayName || Component.name || 'Component'})`;
+
+  return AuthenticatedComponent;
 }
 
-export default withPetugasAuth
+export default withPetugasAuth;

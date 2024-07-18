@@ -53,9 +53,11 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchData();
-    fetchKehadiran();
-  }, []);
+    if (router.isReady) {
+      fetchData();
+      fetchKehadiran();
+    }
+  }, [router.isReady]);
 
   return (
     <SidebarDashboard>
