@@ -187,9 +187,10 @@ const Dashboard = () => {
                 _hover={{ borderColor: "teal.100" }}
                 onClick={() => router.push("/admin/siswa")}
                 cursor={"pointer"}
+                width={"auto"}
               >
                 {loading ? (
-                  <LoadingComponent mx="auto" my="20" />
+                  <LoadingComponent mx="55" my="20" />
                 ) : (
                   <>
                     <Box
