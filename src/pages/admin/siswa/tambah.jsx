@@ -71,6 +71,7 @@ const Tambah = () => {
               placeholder="Masukkan NIS"
               onChange={(e) => setIdSiswa(e.target.value)}
               value={idSiswa}
+              _placeholder={{ opacity: 0.5, color: "gray.500", fontsize: 12 }}
             />
           </FormControl>
           <FormControl mb={4}>
@@ -80,6 +81,7 @@ const Tambah = () => {
               placeholder="Masukkan Nama"
               onChange={(e) => setNama(e.target.value)}
               value={nama}
+              _placeholder={{ opacity: 0.5, color: "gray.500", fontsize: 12 }}
             />
           </FormControl>
           <FormControl mb={6}>
@@ -89,6 +91,7 @@ const Tambah = () => {
               placeholder="Masukkan Kelas"
               onChange={(e) => setKelas(e.target.value)}
               value={kelas}
+              _placeholder={{ opacity: 0.5, color: "gray.500", fontsize: 12 }}
             />
           </FormControl>
           <FormControl mb={6}>
@@ -98,6 +101,7 @@ const Tambah = () => {
               placeholder="8xxxxxxxxx"
               onChange={(e) => setNoOrangTua(e.target.value)}
               value={noOrangTua}
+              _placeholder={{ opacity: 0.5, color: "gray.500", fontsize: 12 }}
             />
           </FormControl>
 

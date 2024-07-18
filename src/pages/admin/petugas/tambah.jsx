@@ -69,6 +69,7 @@ const Tambah = () => {
               placeholder="Masukkan nama"
               onChange={(e) => setName(e.target.value)}
               value={name}
+              _placeholder={{ opacity: 0.5, color: "gray.500", fontsize: 12 }}
             />
           </FormControl>
           <FormControl mb={4}>
@@ -78,6 +79,7 @@ const Tambah = () => {
               placeholder="Masukkan email"
               onChange={(e) => setEmail(e.target.value)}
               value={email}
+              _placeholder={{ opacity: 0.5, color: "gray.500", fontsize: 12 }}
             />
           </FormControl>
           <FormControl mb={6}>
@@ -87,6 +89,7 @@ const Tambah = () => {
               placeholder="Masukkan password"
               onChange={(e) => setPassword(e.target.value)}
               value={password}
+              _placeholder={{ opacity: 0.5, color: "gray.500", fontsize: 12 }}
             />
           </FormControl>
 
