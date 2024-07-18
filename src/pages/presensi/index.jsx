@@ -9,10 +9,12 @@ import {
   Heading,
   Text,
   useToast,
+  VStack,
 } from "@chakra-ui/react";
 import Footer from "@/components/footer";
 import withPetugasAuth from "@/utils/petugasAuthorization";
 import axiosInstance from "@/utils/axiosInstance";
+import LoadingComponent from "@/components/LoadingComponent";
 
 const ScanPresensi = () => {
   const [scanResult, setScanResult] = useState(null);
@@ -21,10 +23,14 @@ const ScanPresensi = () => {
   const router = useRouter();
   const toast = useToast();
   const [isFirst, setIsFirst] = useState(true);
-  const [loading, setLoading] = useState(false);
+  const [isLock, setIsLock] = useState(false);
   const now = new Date();
   const nowIndonesian = new Date(now.getTime() + 7 * 60 * 60 * 1000);
   const nowISO = nowIndonesian.toISOString().split("T")[1];
+  const [nama, setNama] = useState("");
+  const [message, setMessage] = useState("");
+  const [idSiswa, setIdSiswa] = useState("")
+  const [messageError, setMessageError] = useState(null);
 
   useEffect(() => {
     const [hour, minute] = nowISO.split(":").map(Number);
@@ -49,39 +55,18 @@ const ScanPresensi = () => {
       });
 
       const success = (result) => {
-        setLoading(true);
         setScanResult(result);
-        handlePresensi();
-        setTimeout(() => {
-          scanner.clear();
-          setScanResult(null);
-          setScannerActive(false);
-        }, 2000);
-      };
-
-      const handlePresensi = async () => {
-        try {
-          const response = await axiosInstance.post("/petugas/presensi", {
-            scanResult,
-          });
-          toast({
-            title: response.data.message,
-            status: "info",
-            position: "bottom-right",
-            isClosable: true,
-          });
-          setLoading(false);
-        } catch (error) {
-          console.error(error);
-          toast({
-            title: error.response.data.message,
-            status: "error",
-            position: "bottom-right",
-            isClosable: true,
-          });
-          setLoading(false);
+        console.log(scanResult);
+        console.log(result);
+        console.log(isLock);
+        if (isLock === false) {
+          handlePresensi(result);
         }
-      };
+
+        scanner.clear();
+        // setScanResult(null);
+        setScannerActive(false);
+      };      
 
       const error = (err) => {
         console.warn(err);
@@ -98,6 +83,43 @@ const ScanPresensi = () => {
     };
   }, [scannerActive]);
 
+  const handlePresensi = async (result) => {
+    setIsLock(true);
+    try {
+      const response = await axiosInstance.post("/petugas/presensi", {
+        idSiswa: result,
+      });
+      toast({
+        title: response.data.message,
+        status: "info",
+        position: "bottom-right",
+        isClosable: true,
+      });
+      setIsLock(false);
+      setNama(response.data.data.nama);
+      setMessage(response.data.message);
+      setIdSiswa(response.data.data.idSiswa);
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: error?.response?.data?.message,
+        status: "error",
+        position: "bottom-right",
+        isClosable: true,
+      });
+      setIsLock(false);        
+      setScanResult(null);
+      setMessageError(error?.response?.data?.message); 
+      if(messageError != null) {
+        console.log(error)
+      }
+      console.log(error)
+      console.log(error?.response)
+      console.log(error?.response?.data)
+      console.log(error?.response?.data?.message)
+    }
+  };
+
   const handleLogout = () => {
     try {
       localStorage.setItem("token", "");
@@ -108,6 +130,7 @@ const ScanPresensi = () => {
   };
 
   const handlePresensiLagi = () => {
+    setScannerActive(true);
     // if (presensi == "Presensi Tidak Tersedia") {
     //   return toast({
     //     title: "Presensi tidak tersedia pada jam ini",
@@ -117,7 +140,6 @@ const ScanPresensi = () => {
     //   });
     // }
     setScanResult(null);
-    setScannerActive(true);
     setIsFirst(false);
   };
 
@@ -175,11 +197,22 @@ const ScanPresensi = () => {
             </Flex>
 
             {/* qr scanner */}
-            <Box w="full" h="300px" bg="gray.50" mx="auto">
-              {scanResult ? (
-                <Text>
-                  Success: <Text as="span">{scanResult}</Text>
-                </Text>
+            <Box w="full" h="300px" bg="gray.50" mx="auto" display="flex" justifyContent="center">
+            {isLock ? (
+                <LoadingComponent alignSelf="center" />
+              ) 
+              : messageError? 
+              <VStack mt={8}>
+                <Text fontSize={"l"}>Presensi Gagal</Text> 
+                <Text>{messageError}</Text>
+              </VStack>
+              :
+              scanResult ? (
+                <VStack>
+                  <Text>{message}</Text>
+                  <Text>{nama}</Text>
+                  <Text>NIS: {idSiswa}</Text>
+                </VStack>
               ) : (
                 <div id="reader"></div>
               )}
