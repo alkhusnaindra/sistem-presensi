@@ -1,4 +1,5 @@
 import SidebarDashboard from "@/components/SidebarDashboard";
+import withAdminAuth from "@/utils/adminAuthorization";
 import axiosInstance from "@/utils/axiosInstance";
 import {
   FormControl,
@@ -86,4 +87,4 @@ const Tambah = () => {
   );
 };
 
-export default Tambah;
+export default withAdminAuth(Tambah)

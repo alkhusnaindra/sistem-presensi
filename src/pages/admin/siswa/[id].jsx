@@ -1,5 +1,6 @@
 import Loading from "@/components/Loading";
 import SidebarDashboard from "@/components/SidebarDashboard";
+import withAdminAuth from "@/utils/adminAuthorization";
 import axiosInstance from "@/utils/axiosInstance";
 import {
   FormControl,
@@ -142,4 +143,4 @@ const Edit = () => {
   );
 };
 
-export default Edit;
+export default withAdminAuth(Edit);

@@ -1,11 +1,11 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, createContext } from "react";
-import { jwtDecode } from "jwt-decode"; // Perhatikan bahwa tidak ada kurung kurawal
+import { jwtDecode } from "jwt-decode";
 import { useToast } from "@chakra-ui/react";
 
 export const AuthContext = createContext();
 
-const withAuth = (Component) => {
+const withAdminAuth = (Component) => {
   return (props) => {
     const router = useRouter();
     const [userData, setUserData] = useState(null);
@@ -19,7 +19,7 @@ const withAuth = (Component) => {
       } else {
         try {
           const payload = jwtDecode(token);
-          if (!payload.idAdmin || !payload.idPengurus) {
+          if (!payload.idAdmin) {
             console.log(52862)
             router.push("/");
           } else if (payload.exp < Date.now() / 1000) {
@@ -50,4 +50,4 @@ const withAuth = (Component) => {
   };
 }
 
-export default withAuth
+export default withAdminAuth

@@ -16,6 +16,7 @@ import LoadingComponent from "@/components/LoadingComponent";
 import axiosInstance from "@/utils/axiosInstance";
 import formatDate from "@/utils/formatDate";
 import { useRouter } from "next/router";
+import withAdminAuth from "@/utils/adminAuthorization";
 
 const Dashboard = () => {
   const router = useRouter();
@@ -233,4 +234,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default withAdminAuth(Dashboard);

@@ -1,5 +1,6 @@
 import Loading from "@/components/Loading";
 import SidebarDashboard from "@/components/SidebarDashboard";
+import withAdminAuth from "@/utils/adminAuthorization";
 import axiosInstance from "@/utils/axiosInstance";
 import { secondaryColor, white } from "@/utils/color";
 import formatDate from "@/utils/formatDate";
@@ -266,4 +267,4 @@ const Petugas = () => {
   );
 };
 
-export default Petugas;
+export default withAdminAuth(Petugas)
