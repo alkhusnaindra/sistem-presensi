@@ -39,13 +39,13 @@ const ScanPresensi = () => {
     } else if (hour >= 12 && hour < 15) {
       setPresensi("Presensi Pulang");
     } else {
-      setPresensi("Presensi Tidak Tersedia");
+      setPresensi("Bukan Jam Presensi");
     }
   }, []);
 
   useEffect(() => {
     let scanner;
-    if (scannerActive) {
+    if (scannerActive === true) {
       scanner = new Html5QrcodeScanner("reader", {
         qrbox: {
           width: 300,
@@ -55,16 +55,13 @@ const ScanPresensi = () => {
       });
 
       const success = (result) => {
-        setScanResult(result);
-        console.log(scanResult);
-        console.log(result);
-        console.log(isLock);
+        setScanResult(result);  
         if (isLock === false) {
           handlePresensi(result);
+          setScannerActive(false);
         }
-
         scanner.clear();
-        // setScanResult(null);
+        setScanResult(null);
         setScannerActive(false);
       };      
 
@@ -85,10 +82,12 @@ const ScanPresensi = () => {
 
   const handlePresensi = async (result) => {
     setIsLock(true);
+    setScannerActive(false);
     try {
       const response = await axiosInstance.post("/petugas/presensi", {
         idSiswa: result,
       });
+      setScannerActive(false);
       toast({
         title: response.data.message,
         status: "info",
@@ -100,23 +99,16 @@ const ScanPresensi = () => {
       setMessage(response.data.message);
       setIdSiswa(response.data.data.idSiswa);
     } catch (error) {
-      console.error(error);
+      console.error(error);      
       toast({
         title: error?.response?.data?.message,
         status: "error",
         position: "bottom-right",
         isClosable: true,
       });
-      setIsLock(false);        
-      setScanResult(null);
-      setMessageError(error?.response?.data?.message); 
-      if(messageError != null) {
-        console.log(error)
-      }
-      console.log(error)
-      console.log(error?.response)
-      console.log(error?.response?.data)
-      console.log(error?.response?.data?.message)
+      setIsLock(false);    
+      setScannerActive(false);
+      setMessageError(error?.response?.data?.message);           
     }
   };
 
@@ -130,17 +122,20 @@ const ScanPresensi = () => {
   };
 
   const handlePresensiLagi = () => {
+    console.log("clicked")
+    if (presensi == "Bukan Jam Presensi") {
+      return toast({
+        title: "Presensi tidak tersedia pada jam ini",
+        status: "info",
+        position: "bottom-right",
+        isClosable: true,
+      });
+    }
     setScannerActive(true);
-    // if (presensi == "Presensi Tidak Tersedia") {
-    //   return toast({
-    //     title: "Presensi tidak tersedia pada jam ini",
-    //     status: "info",
-    //     position: "bottom-right",
-    //     isClosable: true,
-    //   });
-    // }
-    setScanResult(null);
+    setScanResult(null);    
     setIsFirst(false);
+    setMessageError(null);
+    setMessage(null);
   };
 
   return (
@@ -162,7 +157,7 @@ const ScanPresensi = () => {
             }}
           >
             LOGOUT
-          </Button>
+          </Button>         
         </Flex>
         <Center flex="1" mt={"-150px"}>
           {/* card */}
@@ -183,7 +178,7 @@ const ScanPresensi = () => {
                 <Text fontSize="sm">Tunjukan QR Code ke Kamera</Text>
               </Flex>
               <Button
-                onClick={handlePresensiLagi}
+                onClick={()=>{handlePresensiLagi()}}
                 color={"white"}
                 bg={"teal.400"}
                 _hover={{
@@ -192,7 +187,7 @@ const ScanPresensi = () => {
                 variant="solid"
                 size="md"
               >
-                {isFirst ? "Presensi" : "Presensi Lagi"}
+                {presensi == "Bukan Jam Presensi"?"Bukan Jam Presensi": isFirst ? "Presensi" : "Presensi Lagi"}
               </Button>
             </Flex>
 
@@ -214,8 +209,8 @@ const ScanPresensi = () => {
                   <Text>NIS: {idSiswa}</Text>
                 </VStack>
               ) : (
-                <div id="reader"></div>
-              )}
+              <></>)}
+              <div id="reader"></div>
             </Box>
           </Flex>
         </Center>
