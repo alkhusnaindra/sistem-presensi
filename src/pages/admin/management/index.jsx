@@ -1,6 +1,6 @@
 import Loading from "@/components/Loading";
 import SidebarDashboard from "@/components/SidebarDashboard";
-import withAdminAuth from "@/utils/adminAuthorization";
+import withAdminAuth, { AuthContext } from "@/utils/adminAuthorization";
 import axiosInstance from "@/utils/axiosInstance";
 import { secondaryColor, white } from "@/utils/color";
 import formatDate from "@/utils/formatDate";
@@ -40,7 +40,7 @@ import {
 } from "@chakra-ui/react";
 import { Modak } from "next/font/google";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 const Management = () => {
   const totalButton = useBreakpointValue({ base: 1, lg: 3 }, { fallback: 1 });
@@ -49,7 +49,22 @@ const Management = () => {
   const [loading, setLoading] = useState(true);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+  const [superAdmin, setSuperAdmin] = useState(false);
   const toast = useToast();
+  const userData = useContext(AuthContext);
+  const isSuperAdmin = userData?.isSuperAdmin;
+
+  useEffect(() => {
+    if (userData) {
+      setSuperAdmin(userData.superAdmin === true);
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    if (router.isReady) {
+      setSuperAdmin(userData?.super_admin === true);
+    }
+  }, [router.asPath]);
 
   const fetchData = async () => {
     setData(null);
@@ -63,7 +78,7 @@ const Management = () => {
       setData(response.data);
       setLoading(false);
     } catch (error) {
-      console.error(error);      
+      console.error(error);
     }
   };
 
@@ -149,15 +164,17 @@ const Management = () => {
         <Flex direction={"column"} gap={5} w={"100%"}>
           <HStack justifyContent={"space-between"} alignContent={"center"}>
             <Heading>Admin</Heading>
-            <Button
-              onClick={() => router.push("/admin/management/tambah")}
-              colorScheme={"teal"}
-              variant={"outline"}
-              leftIcon={<AddIcon />}
-              _hover={{ bg: "teal.500", color: "white" }}
-            >
-              Tambah Data
-            </Button>
+            {isSuperAdmin ? (
+              <Button
+                onClick={() => router.push("/admin/management/tambah")}
+                colorScheme={"teal"}
+                variant={"outline"}
+                leftIcon={<AddIcon />}
+                _hover={{ bg: "teal.500", color: "white" }}
+              >
+                Tambah Data
+              </Button>
+            ) : null}
           </HStack>
           <TableContainer>
             <Table>
@@ -188,15 +205,17 @@ const Management = () => {
                     </Td>
                     <Td>{formatDate(item.createdAt)}</Td>
                     <Td>
-                      <Button
-                        colorScheme={"red"}
-                        onClick={() => {
-                          setIsConfirmationOpen(true);
-                          setDeleteId(item.idAdmin);
-                        }}
-                      >
-                        Delete
-                      </Button>
+                      {isSuperAdmin ? (
+                        <Button
+                          colorScheme={"red"}
+                          onClick={() => {
+                            setIsConfirmationOpen(true);
+                            setDeleteId(item.idAdmin);
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      ) : null}
                     </Td>
                   </Tr>
                 ))}
@@ -287,4 +306,4 @@ const Management = () => {
   );
 };
 
-export default withAdminAuth(Management)
+export default withAdminAuth(Management);

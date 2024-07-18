@@ -1,5 +1,6 @@
+import Loading from "@/components/Loading";
 import SidebarDashboard from "@/components/SidebarDashboard";
-import withAdminAuth from "@/utils/adminAuthorization";
+import withAdminAuth, { AuthContext } from "@/utils/adminAuthorization";
 import axiosInstance from "@/utils/axiosInstance";
 import {
   FormControl,
@@ -11,12 +12,42 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 const Tambah = () => {
   const [email, setEmail] = useState("");
   const toast = useToast();
   const router = useRouter();
+  const [superAdmin, setSuperAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const userData = useContext(AuthContext);
+  const isSuperAdmin = userData?.isSuperAdmin;
+
+  useEffect(() => {
+    if (userData) {
+      setSuperAdmin(userData.superAdmin === true);
+      setLoading(false); // Menyelesaikan loading ketika userData ter-load
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    if (router.isReady && userData) {
+      setSuperAdmin(userData.super_admin === true);
+    }
+  }, [router.isReady, router.asPath, userData]);
+
+  useEffect(() => {
+    if (!loading && !isSuperAdmin) {
+      router.push("/admin/management");
+      toast({
+        title: "Anda tidak memiliki izin untuk mengakses halaman ini",
+        status: "error",
+        position: "bottom-right",
+        isClosable: true,
+      });
+    }
+  }, [loading, isSuperAdmin]);
 
   const handleAdd = async () => {
     try {
@@ -40,6 +71,8 @@ const Tambah = () => {
       });
     }
   };
+
+  if (loading) return <Loading />;
 
   return (
     <SidebarDashboard>
@@ -75,9 +108,7 @@ const Tambah = () => {
             _hover={{
               bg: "teal.300",
             }}
-            onClick={() => {
-              handleAdd();
-            }}
+            onClick={handleAdd}
           >
             Simpan
           </Button>
@@ -87,4 +118,4 @@ const Tambah = () => {
   );
 };
 
-export default withAdminAuth(Tambah)
+export default withAdminAuth(Tambah);
