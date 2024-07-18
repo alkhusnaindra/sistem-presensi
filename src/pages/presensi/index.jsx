@@ -11,6 +11,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import Footer from "@/components/footer";
+import withPetugasAuth from "@/utils/petugasAuthorization";
 
 const ScanPresensi = () => {
   const [scanResult, setScanResult] = useState(null);
@@ -46,6 +47,15 @@ const ScanPresensi = () => {
     };
   }, []);
 
+  const handleLogout = () => {
+    try {
+      localStorage.setItem("token", "");
+      router.push("/");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <Box width={"100%"} h="100vh">
       <Flex direction="column" justify="space-between" h="full">
@@ -55,7 +65,9 @@ const ScanPresensi = () => {
             <Text>SD ‘Aisyiyah Unggulan Purworejo</Text>
           </Flex>
           <Button
-            onClick={() => router.push("/presensi")}
+            onClick={() => {
+              handleLogout();
+            }}
             variant="solid"
             size="sm"
             color={"white"}
@@ -124,4 +136,4 @@ const ScanPresensi = () => {
   );
 };
 
-export default ScanPresensi;
+export default withPetugasAuth(ScanPresensi);
