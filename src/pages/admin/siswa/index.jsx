@@ -35,10 +35,12 @@ import {
   Tr,
   useBreakpointValue,
   useToast,
+  VStack,
 } from "@chakra-ui/react";
 import { Modak } from "next/font/google";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import QRCode from "react-qr-code";
 
 const Siswa = () => {
   const totalButton = useBreakpointValue({ base: 1, lg: 3 }, { fallback: 1 });
@@ -46,9 +48,17 @@ const Siswa = () => {
   const [data, setData] = useState();
   const [loading, setLoading] = useState(true);
   const [isConfirmationOpen, setIsConfirmationOpen] = useState(false);
-  const [deleteId, setDeleteId] = useState(null);
+  const [idSiswa, setIdSiswa] = useState(null);
   const toast = useToast();
   const [kelas, setKelas] = useState([]);
+  const [isQROpen, setIsQROpen] = useState(false);
+  const [nama, setNama] = useState("");
+
+  const handleQRClose = () => {
+    setIsQROpen(false);
+    setNama("");
+    setIdSiswa(null);
+  };
 
   const fetchData = async () => {
     setData(null);
@@ -91,7 +101,7 @@ const Siswa = () => {
       });
       fetchData();
       setIsConfirmationOpen(false);
-      setDeleteId(null);
+      setIdSiswa(null);
     } catch (error) {
       toast({
         title: error?.response?.data?.message,
@@ -109,7 +119,7 @@ const Siswa = () => {
         isOpen={isConfirmationOpen}
         onClose={() => {
           setIsConfirmationOpen(false);
-          setDeleteId(null);
+          setIdSiswa(null);
         }}
       >
         <ModalOverlay />
@@ -125,12 +135,12 @@ const Siswa = () => {
               mr={3}
               onClick={() => {
                 setIsConfirmationOpen(false);
-                setDeleteId(null);
+                setIdSiswa(null);
               }}
             >
               Close
             </Button>
-            <Button colorScheme={"red"} onClick={() => deleteData(deleteId)}>
+            <Button colorScheme={"red"} onClick={() => deleteData(idSiswa)}>
               Delete
             </Button>
           </ModalFooter>
@@ -177,7 +187,12 @@ const Siswa = () => {
               Tambah Data
             </Button>
           </HStack>
-          <Select maxW={"200px"} placeholder="Pilih Kelas" value={router.query.kelas} onChange={(e) => handleKelasChange(e.target.value)}>
+          <Select
+            maxW={"200px"}
+            placeholder="Pilih Kelas"
+            value={router.query.kelas}
+            onChange={(e) => handleKelasChange(e.target.value)}
+          >
             {kelas?.map((item, index) => (
               <option key={index} value={item}>
                 {item}
@@ -193,6 +208,7 @@ const Siswa = () => {
                   <Th>Kelas</Th>
                   <Th>No Orangtua</Th>
                   <Th>Dibuat Pada</Th>
+                  <Th></Th>
                   <Th></Th>
                 </Tr>
               </Thead>
@@ -229,18 +245,30 @@ const Siswa = () => {
                         colorScheme={"red"}
                         onClick={() => {
                           setIsConfirmationOpen(true);
-                          setDeleteId(item.idSiswa);
+                          setIdSiswa(item.idSiswa);
                         }}
                         m={2}
                       >
                         Delete
-                      </Button>                    
+                      </Button>
                       <Button
                         colorScheme={"gray"}
                         m={2}
-                        onClick={() => router.push(`/admin/siswa/presensi/${item.idSiswa}`)}>
+                        onClick={() =>
+                          router.push(`/admin/siswa/presensi/${item.idSiswa}`)
+                        }
+                      >
                         Presensi
                       </Button>
+                    </Td>
+                    <Td>
+                      <InfoIcon
+                        onClick={() => {
+                          setIsQROpen(true);
+                          setNama(item.nama);
+                          setIdSiswa(item.idSiswa);
+                        }}
+                      />
                     </Td>
                   </Tr>
                 ))}
@@ -327,8 +355,33 @@ const Siswa = () => {
         </Flex>
       </SidebarDashboard>
       <ConfirmationModal />
+      <ModalQR isQROpen={isQROpen} idSiswa={idSiswa} nama={nama} onClose={handleQRClose} />
     </>
   );
 };
 
+const ModalQR = ({ nama, idSiswa, isQROpen, onClose }) => {
+  return (
+    <Modal isOpen={isQROpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>{nama}</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <VStack>
+            <QRCode value={idSiswa} />
+            <Text fontSize={"lg"}>
+              NIS: {idSiswa}
+            </Text>
+          </VStack>
+        </ModalBody>
+        <ModalFooter>
+          <Button colorScheme="gray" mr={3} onClick={onClose}>
+            Close
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+};
 export default withAdminAuth(Siswa);
