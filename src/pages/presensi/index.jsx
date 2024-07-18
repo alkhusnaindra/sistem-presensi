@@ -1,51 +1,66 @@
 import React, { useEffect, useState } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { useRouter } from "next/router";
-import {
-  Box,
-  Button,
-  Center,
-  Container,
-  Flex,
-  Heading,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Button, Center, Flex, Heading, Text, useToast } from "@chakra-ui/react";
 import Footer from "@/components/footer";
 import withPetugasAuth from "@/utils/petugasAuthorization";
 
 const ScanPresensi = () => {
   const [scanResult, setScanResult] = useState(null);
+  const [scannerActive, setScannerActive] = useState(false);
+  const [presensi, setPresensi] = useState("");
   const router = useRouter();
+  const toast = useToast();
+  const [isFirst, setIsFirst] = useState(true);
+
+  const now = new Date();
+  const nowISO = now.toISOString().split("T")[1];
 
   useEffect(() => {
-    const scanner = new Html5QrcodeScanner("reader", {
-      qrbox: {
-        width: 300,
-        height: 300,
-      },
-      fps: 5,
-    });
+    const [hour, minute] = nowISO.split(":").map(Number);
+    if (hour >= 6 && hour < 9) {
+      setPresensi("Presensi Masuk");
+    } else if (hour >= 12 && hour < 15) {
+      setPresensi("Presensi Pulang");
+    } else {
+      setPresensi("Presensi Tidak Tersedia");
+    }
+  }, []);
 
-    const success = (result) => {
-      setScanResult(result);
-      setTimeout(() => {
-        scanner.clear();
-        setScanResult(null);
-        scanner.render(success, error);
-      }, 2000);
-    };
+  useEffect(() => {
+    let scanner;
+    if (scannerActive) {
+      scanner = new Html5QrcodeScanner("reader", {
+        qrbox: {
+          width: 300,
+          height: 300,
+        },
+        fps: 30,
+      });
 
-    const error = (err) => {
-      console.warn(err);
-    };
+      const success = (result) => {
+        setScanResult(result);
+        setTimeout(() => {
+          scanner.clear();
+          setScanResult(null);
+          setScannerActive(false);
+        }, 2000);
+      };
 
-    scanner.render(success, error);
+      const error = (err) => {
+        console.warn(err);
+      };
+
+      scanner.render(success, error);
+    }
 
     // Clean up the scanner on component unmount
     return () => {
-      scanner.clear();
+      if (scanner) {
+        scanner.clear();
+      }
     };
-  }, []);
+  }, [scannerActive]);
 
   const handleLogout = () => {
     try {
@@ -56,18 +71,30 @@ const ScanPresensi = () => {
     }
   };
 
+  const handlePresensiLagi = () => {
+    if(presensi == "Presensi Tidak Tersedia"){
+      return toast({
+        title: "Presensi tidak tersedia pada jam ini",
+        status: "info",
+        position: "bottom-right",
+        isClosable: true,
+      })
+    }
+    setScanResult(null);
+    setScannerActive(true);
+    setIsFirst(false);
+  };
+
   return (
     <Box width={"100%"} h="100vh">
       <Flex direction="column" justify="space-between" h="full">
         <Flex justify="space-between" align="center" px={10} py={5}>
           <Flex direction={"column"} gap={2}>
             <Heading fontSize={"20px"}>Presensi Siswa Berbasis QR Code</Heading>
-            <Text>SD ‘Aisyiyah Unggulan Purworejo</Text>
+            <Text>SD &apos;Aisyiyah Unggulan Purworejo</Text>
           </Flex>
           <Button
-            onClick={() => {
-              handleLogout();
-            }}
+            onClick={handleLogout}
             variant="solid"
             size="sm"
             color={"white"}
@@ -78,7 +105,7 @@ const ScanPresensi = () => {
           >
             LOGOUT
           </Button>
-        </Flex>
+        </Flex>        
         <Center flex="1" mt={"-150px"}>
           {/* card */}
           <Flex
@@ -92,19 +119,13 @@ const ScanPresensi = () => {
             position="relative"
             direction="column"
           >
-            <Flex
-              justify="space-between"
-              p={5}
-              // position="absolute"
-              w={["full"]}
-              mx="auto"
-            >
+            <Flex justify="space-between" p={5} w={["full"]} mx="auto">
               <Flex direction="column">
-                <Text fontWeight="bold">Presensi Masuk</Text>
+                <Text fontWeight="bold">{presensi}</Text>
                 <Text fontSize="sm">Tunjukan QR Code ke Kamera</Text>
               </Flex>
               <Button
-                onClick={() => router.push("/presensi")}
+                onClick={handlePresensiLagi}
                 color={"white"}
                 bg={"teal.400"}
                 _hover={{
@@ -113,7 +134,7 @@ const ScanPresensi = () => {
                 variant="solid"
                 size="md"
               >
-                PRESENSI LAGI
+                {isFirst ? "Presensi" : "Presensi Lagi"}
               </Button>
             </Flex>
 
