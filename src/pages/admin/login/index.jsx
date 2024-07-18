@@ -15,7 +15,6 @@ import {
   useToast,
 } from "@chakra-ui/react";
 
-import Footer from "@/components/footer";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import axiosInstance from "@/utils/axiosInstance";
@@ -172,8 +171,11 @@ const Login = () => {
           </CardFooter>
         </Card>
       </div>
-      <Footer />
-    </div>
+      <div className="flex flex-row shadow-2xl w-full py-3 items-center justify-center bg-white">
+      <div>
+        <text> &copy; SD &apos; Aisyiyah Unggulan Purworejo</text>
+      </div>
+    </div>    </div>
   );
 };
 

@@ -11,7 +11,6 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import Footer from "@/components/footer";
 import withPetugasAuth from "@/utils/petugasAuthorization";
 import axiosInstance from "@/utils/axiosInstance";
 import LoadingComponent from "@/components/LoadingComponent";
@@ -236,8 +235,11 @@ const ScanPresensi = () => {
           </Flex>
         </Center>
 
-        <Footer />
-      </Flex>
+        <div className="flex flex-row shadow-2xl w-full py-3 items-center justify-center bg-white">
+      <div>
+        <text> &copy; SD &apos; Aisyiyah Unggulan Purworejo</text>
+      </div>
+    </div>      </Flex>
     </Box>
   );
 };
