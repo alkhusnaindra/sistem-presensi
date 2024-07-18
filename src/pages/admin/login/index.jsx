@@ -12,16 +12,74 @@ import {
   InputRightElement,
   FormControl,
   FormLabel,
+  useToast,
 } from "@chakra-ui/react";
 
 import Footer from "@/components/footer";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
+import axiosInstance from "@/utils/axiosInstance";
 
 const Login = () => {
   const router = useRouter();
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
+  const toast = useToast();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = async () => {
+    if (email === "" || password === "") {
+      toast({
+        title: "Field Tidak Boleh Kosong",
+        status: "error",
+        position: "bottom-right",
+        isClosable: true,
+      });
+      return;
+    }
+    try {
+      const response = await axiosInstance.post("/admin/login", {
+        email,
+        password,
+      });
+      const token = response?.data?.token;
+      localStorage.setItem("token", token);
+      toast({
+        title: response.data.message,
+        status: "info",
+        position: "bottom-right",
+        isClosable: true,
+      });
+      router.push("/admin/dashboard");
+    } catch (error) {
+      console.error(error);
+      // FOR PETUGAS
+      try {
+        const response = await axiosInstance.post("/petugas/login", {
+          email,
+          password,
+        });
+        const token = response?.data?.token;
+        localStorage.setItem("token", token);
+        toast({
+          title: response.data.message,
+          status: "info",
+          position: "bottom-right",
+          isClosable: true,
+        });
+        router.push("/presensi");
+      } catch (error) {
+        console.error(error);
+        toast({
+          title: error?.response?.data?.message,
+          status: "error",
+          position: "bottom-right",
+          isClosable: true,
+        });
+      }
+    }
+  };
 
   return (
     <div>
@@ -61,7 +119,12 @@ const Login = () => {
                   <FormLabel fontSize="sm" color="#333">
                     Email address
                   </FormLabel>
-                  <Input type="email" placeholder="Masukkan Email" />
+                  <Input
+                    type="email"
+                    placeholder="Masukkan Email"
+                    onChange={(e) => setEmail(e.target.value)}
+                    value={email}
+                  />
                 </FormControl>
                 <FormControl mt="3">
                   <FormLabel fontSize="sm">Password</FormLabel>
@@ -70,6 +133,8 @@ const Login = () => {
                       pr="4.5rem"
                       type={show ? "text" : "password"}
                       placeholder="Masukkan password"
+                      onChange={(e) => setPassword(e.target.value)}
+                      value={password}
                     />
                     <InputRightElement width="4.5rem">
                       <Button h="1.75rem" size="sm" onClick={handleClick}>
@@ -90,7 +155,7 @@ const Login = () => {
             <Button
               variant="solid"
               colorScheme="blue"
-              onClick={() => router.push("/admin/dashboard")}
+              onClick={() => handleLogin()}
             >
               Login
             </Button>

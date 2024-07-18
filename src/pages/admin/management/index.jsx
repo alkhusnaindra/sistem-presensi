@@ -62,7 +62,7 @@ const Management = () => {
       setData(response.data);
       setLoading(false);
     } catch (error) {
-      console.error(error);
+      console.error(error);      
     }
   };
 
@@ -86,6 +86,8 @@ const Management = () => {
         isClosable: true,
       });
       console.error(error);
+      setDeleteId(null);
+      setIsConfirmationOpen(false);
     }
   };
 
