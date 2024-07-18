@@ -69,7 +69,7 @@ const SidebarDashboard = ({ children }) => {
           justify={{ base: "center", md: "start" }}
           alignItems={"center"}
         >
-          <Image src="/images/logo.png" width={"35px"} height={"35px"} />
+          <Image src="/images/logo.png" width={"35px"} height={"35px"} onClick={() => {router.push("/admin/informasi")}} />
           <Text
             textAlign={useBreakpointValue({ base: "center", md: "left" })}
             fontFamily={"heading"}
