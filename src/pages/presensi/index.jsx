@@ -29,7 +29,7 @@ const ScanPresensi = () => {
   const nowISO = nowIndonesian.toISOString().split("T")[1];
   const [nama, setNama] = useState("");
   const [message, setMessage] = useState("");
-  const [idSiswa, setIdSiswa] = useState("")
+  const [idSiswa, setIdSiswa] = useState("");
   const [messageError, setMessageError] = useState(null);
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const ScanPresensi = () => {
         scanner.clear();
         // setScanResult(null);
         setScannerActive(false);
-      };      
+      };
 
       const error = (err) => {
         console.warn(err);
@@ -107,16 +107,16 @@ const ScanPresensi = () => {
         position: "bottom-right",
         isClosable: true,
       });
-      setIsLock(false);        
+      setIsLock(false);
       setScanResult(null);
-      setMessageError(error?.response?.data?.message); 
-      if(messageError != null) {
-        console.log(error)
+      setMessageError(error?.response?.data?.message);
+      if (messageError != null) {
+        console.log(error);
       }
-      console.log(error)
-      console.log(error?.response)
-      console.log(error?.response?.data)
-      console.log(error?.response?.data?.message)
+      console.log(error);
+      console.log(error?.response);
+      console.log(error?.response?.data);
+      console.log(error?.response?.data?.message);
     }
   };
 
@@ -197,17 +197,24 @@ const ScanPresensi = () => {
             </Flex>
 
             {/* qr scanner */}
-            <Box w="full" h="300px" bg="gray.50" mx="auto" display="flex" justifyContent="center">
-            {isLock ? (
+            <Box
+              w="full"
+              h="300px"
+              bg="gray.50"
+              mx="auto"
+              display="flex"
+              justifyContent="center"
+            >
+              {isLock ? (
                 <LoadingComponent alignSelf="center" />
-              ) 
-              : messageError? 
-              <VStack mt={8}>
-                <Text fontSize={"l"}>Presensi Gagal</Text> 
-                <Text>{messageError}</Text>
-              </VStack>
-              :
-              scanResult ? (
+              ) : messageError ? (
+                <VStack mt={8}>
+                  <Text fontSize={"l"} fontWeight={"bold"}>
+                    Presensi Gagal
+                  </Text>
+                  <Text>{messageError}</Text>
+                </VStack>
+              ) : scanResult ? (
                 <VStack>
                   <Text>{message}</Text>
                   <Text>{nama}</Text>
