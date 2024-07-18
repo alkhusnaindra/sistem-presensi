@@ -1,9 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import { useRouter } from "next/router";
-import { Box, Button, Center, Flex, Heading, Text, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Center,
+  Flex,
+  Heading,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import Footer from "@/components/footer";
 import withPetugasAuth from "@/utils/petugasAuthorization";
+import axiosInstance from "@/utils/axiosInstance";
 
 const ScanPresensi = () => {
   const [scanResult, setScanResult] = useState(null);
@@ -12,9 +21,10 @@ const ScanPresensi = () => {
   const router = useRouter();
   const toast = useToast();
   const [isFirst, setIsFirst] = useState(true);
-
+  const [loading, setLoading] = useState(false);
   const now = new Date();
-  const nowISO = now.toISOString().split("T")[1];
+  const nowIndonesian = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+  const nowISO = nowIndonesian.toISOString().split("T")[1];
 
   useEffect(() => {
     const [hour, minute] = nowISO.split(":").map(Number);
@@ -39,12 +49,38 @@ const ScanPresensi = () => {
       });
 
       const success = (result) => {
+        setLoading(true);
         setScanResult(result);
+        handlePresensi();
         setTimeout(() => {
           scanner.clear();
           setScanResult(null);
           setScannerActive(false);
         }, 2000);
+      };
+
+      const handlePresensi = async () => {
+        try {
+          const response = await axiosInstance.post("/petugas/presensi", {
+            scanResult,
+          });
+          toast({
+            title: response.data.message,
+            status: "info",
+            position: "bottom-right",
+            isClosable: true,
+          });
+          setLoading(false);
+        } catch (error) {
+          console.error(error);
+          toast({
+            title: error.response.data.message,
+            status: "error",
+            position: "bottom-right",
+            isClosable: true,
+          });
+          setLoading(false);
+        }
       };
 
       const error = (err) => {
@@ -72,14 +108,14 @@ const ScanPresensi = () => {
   };
 
   const handlePresensiLagi = () => {
-    if(presensi == "Presensi Tidak Tersedia"){
-      return toast({
-        title: "Presensi tidak tersedia pada jam ini",
-        status: "info",
-        position: "bottom-right",
-        isClosable: true,
-      })
-    }
+    // if (presensi == "Presensi Tidak Tersedia") {
+    //   return toast({
+    //     title: "Presensi tidak tersedia pada jam ini",
+    //     status: "info",
+    //     position: "bottom-right",
+    //     isClosable: true,
+    //   });
+    // }
     setScanResult(null);
     setScannerActive(true);
     setIsFirst(false);
@@ -105,7 +141,7 @@ const ScanPresensi = () => {
           >
             LOGOUT
           </Button>
-        </Flex>        
+        </Flex>
         <Center flex="1" mt={"-150px"}>
           {/* card */}
           <Flex

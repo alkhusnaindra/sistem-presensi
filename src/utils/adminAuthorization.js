@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, createContext } from "react";
-import jwtDecode from "jwt-decode";
 import { useToast } from "@chakra-ui/react";
+import { jwtDecode } from "jwt-decode";
 
 export const AuthContext = createContext();
 
@@ -18,8 +18,9 @@ const withAdminAuth = (Component) => {
       } else {
         try {
           const payload = jwtDecode(token);
-          if (!payload.idPetugas) {
+          if (!payload.idAdmin) {
             router.push("/");
+            console.log(168);
           } else if (payload.exp < Date.now() / 1000) {
             toast({
               title: "Session has expired",
@@ -45,9 +46,11 @@ const withAdminAuth = (Component) => {
     );
   };
 
-  AuthenticatedComponent.displayName = `withAdminAuth(${Component.displayName || Component.name || 'Component'})`;
+  AuthenticatedComponent.displayName = `withAdminAuth(${
+    Component.displayName || Component.name || "Component"
+  })`;
 
   return AuthenticatedComponent;
-}
+};
 
 export default withAdminAuth;
