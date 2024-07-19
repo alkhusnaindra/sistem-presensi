@@ -98,6 +98,7 @@ const ScanPresensi = () => {
         isClosable: true,
       });
       setIsLock(false);
+      setScanResult(null);
       setNama(response.data.data.nama);
       setMessage(response.data.message);
       setIdSiswa(response.data.data.idSiswa);
@@ -111,10 +112,7 @@ const ScanPresensi = () => {
       });
       setIsLock(false);
       setScanResult(null);
-      setMessageError(error?.response?.data?.message);
-      if (messageError != null) {
-        console.log(error);
-      }
+      setMessageError(error?.response?.data?.message);     
       console.log(error);
       console.log(error?.response);
       console.log(error?.response?.data);
@@ -225,9 +223,9 @@ const ScanPresensi = () => {
                   </Text>
                   <Text>{messageError}</Text>
                 </VStack>
-              ) : scanResult ? (
-                <VStack>
-                  <Text>{message}</Text>
+              ) : nama ? (
+                <VStack mt={8}>
+                  <Text fontSize={"l"} fontWeight={"bold"}>{message}</Text>
                   <Text>{nama}</Text>
                   <Text>NIS: {idSiswa}</Text>
                 </VStack>
