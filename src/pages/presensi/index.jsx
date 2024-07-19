@@ -23,19 +23,23 @@ const ScanPresensi = () => {
   const toast = useToast();
   const [isFirst, setIsFirst] = useState(true);
   const [isLock, setIsLock] = useState(false);
-  const now = new Date();
-  const nowIndonesian = new Date(now.getTime() + 7 * 60 * 60 * 1000);
-  const nowISO = nowIndonesian.toISOString().split("T")[1];
   const [nama, setNama] = useState("");
   const [message, setMessage] = useState("");
   const [idSiswa, setIdSiswa] = useState("");
   const [messageError, setMessageError] = useState(null);
 
+  const getNowISO = () => {
+    const date = new Date();
+    date.setHours(date.getHours() + 7); // Menambahkan offset +7 jam
+    return date.toISOString(); // Mengembalikan tanggal saat ini dalam ISO string dengan offset +7 jam
+  }
+
   useEffect(() => {
-    const [hour, minute] = nowISO.split(":").map(Number);
-    if (hour >= 6 && hour < 9) {
+    const nowISO = getNowISO();
+    const hour = nowISO.slice(11, 13);
+    if (hour >= 0 && hour < 12) {
       setPresensi("Presensi Masuk");
-    } else if (hour >= 12 && hour < 15) {
+    } else if (hour >= 12 && hour < 24) {
       setPresensi("Presensi Pulang");
     } else {
       setPresensi("Bukan Jam Presensi");
@@ -234,12 +238,12 @@ const ScanPresensi = () => {
             </Box>
           </Flex>
         </Center>
-
         <div className="flex flex-row shadow-2xl w-full py-3 items-center justify-center bg-white">
-      <div>
-        <text> &copy; SD &apos; Aisyiyah Unggulan Purworejo</text>
-      </div>
-    </div>      </Flex>
+          <div>
+            <text> &copy; SD &apos; Aisyiyah Unggulan Purworejo</text>
+          </div>
+        </div>{" "}
+      </Flex>
     </Box>
   );
 };
