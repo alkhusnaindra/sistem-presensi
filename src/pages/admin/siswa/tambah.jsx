@@ -9,6 +9,7 @@ import {
   Heading,
   Button,
   useToast,
+  Select,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -86,13 +87,14 @@ const Tambah = () => {
           </FormControl>
           <FormControl mb={6}>
             <FormLabel>Kelas</FormLabel>
-            <Input
-              type="text"
-              placeholder="Masukkan Kelas"
-              onChange={(e) => setKelas(e.target.value)}
-              value={kelas}
-              _placeholder={{ opacity: 0.5, color: "gray.500", fontsize: 12 }}
-            />
+            <Select placeholder="Pilih Kelas" value={kelas} onChange={(e) => setKelas(e.target.value)}>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </Select>
           </FormControl>
           <FormControl mb={6}>
             <FormLabel>No. Telp Orang Tua / Wali</FormLabel>
